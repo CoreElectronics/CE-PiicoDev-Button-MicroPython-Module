@@ -18,6 +18,14 @@ void readSystemSettings(memoryMap *map)
     map->i2cAddress = DEFAULT_I2C_ADDRESS;
     EEPROM.put(LOCATION_I2C_ADDRESS, map->i2cAddress);
   }
+  
+  EEPROM.get(LOCATION_BUTTON_DEBOUNCE_TIME, map->buttonDebounceTime);
+  if (map->buttonDebounceTime == 0xFFFF)
+  {
+    map->buttonDebounceTime = 10; //Default to 10ms
+    EEPROM.put(LOCATION_BUTTON_DEBOUNCE_TIME, map->buttonDebounceTime);
+  }
+  
 }
 
 //If the current setting is different from that in EEPROM, update EEPROM
@@ -43,4 +51,13 @@ void recordSystemSettings(memoryMap *map)
     EEPROM.get(LOCATION_I2C_ADDRESS, i2cAddr);
     map->i2cAddress == i2cAddr; //Return to original address
   }
+  
+//Read the value currently in EEPROM. If it's different from the memory map then record the memory map value to EEPROM.
+	byte debounceTime;
+    EEPROM.get(LOCATION_BUTTON_DEBOUNCE_TIME, debounceTime);
+    if (debounceTime != map->buttonDebounceTime)
+    {
+      EEPROM.put(LOCATION_BUTTON_DEBOUNCE_TIME, (byte)map->buttonDebounceTime);
+    }
+  
 }
