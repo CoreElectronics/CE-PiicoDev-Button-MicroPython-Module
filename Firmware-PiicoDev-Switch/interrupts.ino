@@ -58,20 +58,28 @@ void requestEvent() {
 uint32_t timeBuff[3];
 uint8_t pos = 0;
 void buttonEvent() {
+  debugln("Button Pressed");
   uint32_t now = millis();
-  pos++;
-  timeBuff[pos % 3] = now;
   if (now - buttonPressTime > valueMap.debounceDelay) {
     valueMap.pressCount++;
+    pos++;
+    timeBuff[pos % 3] = now;
   }
   if (timeBuff[pos % 3] - timeBuff[(pos-1) % 3] < valueMap.doubleClickDuration){
     valueMap.status |= (1 << STATUS_DOUBLE_CLICK);
     valueMap.debug = valueMap.doubleClickDuration;
+    debugln("here 1");
   }
   else {
-    bitClear(valueMap.status, STATUS_DOUBLE_CLICK);
+    
     valueMap.debug = 12;
+    debugln("here 2");
   }
+  debug("Double Click Calculation: ");
+  debugln(timeBuff[pos % 3]);
+  debugln(timeBuff[(pos-1) % 3]);
+  debugln(timeBuff[pos % 3] - timeBuff[(pos-1) % 3]);
+  debugln(valueMap.doubleClickDuration);
   //valueMap.debug = pos;
   buttonPressTime = millis();
 }

@@ -15,9 +15,12 @@ _REG_FIRM_MIN    = 0x03
 _REG_I2C_ADDRESS = 0x04
 _REG_PRESS_COUNT = 0x05
 _REG_LED         = 0x07
+_REG_DEBUG       = 0x08
 _REG_DEV_ID      = 0x11
 _REG_DOUBLE_CLICK_DURATION = 0x21
 _REG_DEBOUNCE_WINDOW = 0x23
+_REG_DOUBLE_CLICK_DURATION_OUT = 0x31
+_REG_DEBOUNCE_WINDOW_OUT = 0x33
 
 
 def _readBit(x, n):
@@ -26,22 +29,18 @@ def _readBit(x, n):
 class PiicoDev_Switch(object):
     @property
     def double_click_duration(self):
-        return self._double_click_duration
+        return self._readInt(_REG_DOUBLE_CLICK_DURATION_OUT, 2)
     
     @double_click_duration.setter
     def double_click_duration(self, value):
-        print('setting to ' + str(value))
-        self._double_click_duration = value
         self._writeInt(_REG_DOUBLE_CLICK_DURATION, value, 2)
         
     @property
     def debounce_window(self):
-        return self._debounce_window
+        return self._readInt(_REG_DEBOUNCE_WINDOW_OUT, 2)
     
     @debounce_window.setter
     def debounce_window(self, value):
-        print('setting to ' + str(value))
-        self._debounce_window = value
         self._writeInt(_REG_DEBOUNCE_WINDOW, value, 2)
     
     def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, double_click_duration=300, debounce_window=40):
@@ -54,10 +53,11 @@ class PiicoDev_Switch(object):
             print(compat_str)
         self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
         self.address = address
-        self._double_click_duration = double_click_duration
-        self._debounce_window = debounce_window
+        self.double_click_duration = double_click_duration
+        self.debounce_window = debounce_window
         self.last_command_known = False
         self.last_command_success = False
+        self.double_click_detected = False
         if type(id) is list and not all(v == 0 for v in id): # preference using the ID argument. ignore id if all elements zero
             assert _max(id) <= 1 and _min(id) >= 0 and len(id) == 4, "id must be a list of 1/0, length=4"
             self.address=8+id[0]+2*id[1]+4*id[2]+8*id[3] # select address from pool
@@ -111,9 +111,15 @@ class PiicoDev_Switch(object):
         if sts is not None:
             self.last_command_known = _readBit(sts, 2)
             self.last_command_success = _readBit(sts, 1)
+            self.double_click_detected = _readBit(sts, 3)
     
     def readID(self):
         x=self._readInt(_REG_DEV_ID, 2)
+        self.readStatus()
+        return x
+    
+    def readDebug(self):
+        x=self._readInt(_REG_DEBUG)
         self.readStatus()
         return x
 

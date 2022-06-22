@@ -22,6 +22,8 @@ void statusReturn(char *data) {
   responseType = RESPONSE_STATUS;
   loadArray((uint8_t)valueMap.status);
   valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
+  is the line below in the correct place?
+  bitClear(valueMap.status, STATUS_DOUBLE_CLICK);
 }
 
 void firmwareMajorReturn(char *data) {

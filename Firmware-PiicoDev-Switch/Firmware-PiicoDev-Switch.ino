@@ -10,7 +10,15 @@
  *
  */
 
-#define DEBUG 0
+#define DEBUG true
+
+#if DEBUG == true
+#define debug(x)     Serial.print(x)
+#define debugln(x)   Serial.println(x)
+#else
+#define debug(x)
+#define debugln(x)
+#endif
 
 #include <Wire.h>
 #include <EEPROM.h>
@@ -41,8 +49,8 @@ uint32_t buttonPressTime;
 // Hardware Connectins
 // Prototyping with Arduino Uno
 #if defined(__AVR_ATmega328P__)
-  const uint8_t powerLedPin = 3;
-  const uint16_t buttonPin = 0;
+  const uint8_t powerLedPin = 13;
+  const uint16_t buttonPin = 3;
   const uint16_t addressPin1 = 8;
   const uint16_t addressPin2 = 7;
   const uint16_t addressPin3 = 6;
@@ -168,8 +176,10 @@ void setup() {
 
 #if DEBUG
   Serial.begin(115200);
-  Serial.println("Begin");
 #endif
+  debugln("Begin");
+  debugln(buttonPin);
+
   // Pull up address pins
   pinMode(addressPin1, INPUT_PULLUP);
   pinMode(addressPin2, INPUT_PULLUP);
@@ -241,10 +251,9 @@ void startI2C()
 
   // save new address to the register map
   valueMap.i2cAddress = address;
-  #if DEBUG
-    Serial.print("I2C Address:");
-    Serial.println(address);
-  #endif
+
+  debug("I2C Address: ");
+  debugln(address);
   recordSystemSettings(); // save the new address to EEPROM
 
   // reconfigure Wire instance
