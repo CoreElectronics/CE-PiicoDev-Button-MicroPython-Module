@@ -1,21 +1,5 @@
-<!-- TODO How to use this template
-Follow these commented instructions to build the repo.
-Delete the instructions as you go, to keep for a cleaner final file.
- -->
+# PiicoDev® Button (Switch) MicroPython Module and Firmware
 
-<!-- TODO Initialise the repo with the following two files:
- The MicroPython Module for this device with name: "PiicoDev_[DEVICE MFN].py". Eg for temperature sensor TMP117: PiicoDev_TMP117.py
- A (tested) main.py file
--->
-
-
-<!-- TODO update title to be descriptive. Eg.
-PiicoDev® [Description] [Part#] MicroPython Module
-PiicoDev® Precision Temperature Sensor TMP117 MicroPython Module -->
-# PiicoDev® Template MicroPython Module
-
-<!-- TODO update link URL with CE SKU -->
-<!-- TODO update link title -->
 This is the firmware repo for the [Core Electronics PiicoDev® XXXXXX](https://core-electronics.com.au/catalog/product/view/sku/XXXXXX)
 
 This module depends on the [PiicoDev Unified Library](https://github.com/CoreElectronics/CE-PiicoDev-Unified), include `PiicoDev_Unified.py` in the project directory on your MicroPython device.
@@ -24,12 +8,40 @@ This module depends on the [PiicoDev Unified Library](https://github.com/CoreEle
 See the [Quickstart Guide](https://piico.dev/pX)
  -->
 
-<!-- TODO verify the tested-devices list -->
-This module has been tested on:
- - Micro:bit v2
- - Raspberry Pi Pico
- - Raspberry Pi SBC
+ # Reference
 
+ ## Initialisation
+ ```python
+ switch = PiicoDev_Switch()
+ ```
+
+ ## is_pressed()
+ Return a boolean of the switch status. `True` = pressed.
+
+ ## was_pressed()
+ Return a boolean of whether the switch was closed since the last query.
+ (is a wrapper for `press_count()`)
+
+ ## was_double_pressed()
+Return a boolean of whether the switch was double-pressed since the last query.
+
+## press_count()
+Returns an integer of the number of times the switch was closed since last query
+
+ ## Control onboard LED
+
+ ## Read Device ID
+
+ ## Change I2C address
+
+
+## Properties
+
+### .double_press_window
+The number of milliseconds allowed for a double press
+
+### .debounce_window
+the number of milliseconds dead-time after an initial press
 
 # License
 This project is open source - please review the LICENSE.md file for further licensing information.
