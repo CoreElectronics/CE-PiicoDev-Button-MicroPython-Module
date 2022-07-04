@@ -66,19 +66,21 @@ void buttonEvent() {
     timeBuff[pos % 3] = now;
   }
   if (timeBuff[pos % 3] - timeBuff[(pos-1) % 3] < valueMap.doubleClickDuration){
-    valueMap.status |= (1 << STATUS_DOUBLE_CLICK);
+    valueMap.doubleClickDetected = 1;
     valueMap.debug = valueMap.doubleClickDuration;
-    debugln("here 1");
+    debugln("Double-Click Detected");
   }
   else {
-    
     valueMap.debug = 12;
     debugln("here 2");
   }
   debug("Double Click Calculation: ");
   debugln(timeBuff[pos % 3]);
+  debug("timeBuff[(pos-1) % 3]: ");
   debugln(timeBuff[(pos-1) % 3]);
+  debug("timeBuff[pos % 3] - timeBuff[(pos-1) % 3]: ");
   debugln(timeBuff[pos % 3] - timeBuff[(pos-1) % 3]);
+  debug("valueMap.doubleClickDuration: ");
   debugln(valueMap.doubleClickDuration);
   //valueMap.debug = pos;
   buttonPressTime = millis();

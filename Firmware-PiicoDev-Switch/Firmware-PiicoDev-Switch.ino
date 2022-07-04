@@ -2,7 +2,7 @@
  * PiicoDev Button Firmware
  * Written by Peter Johnston @ Core Electronics
  * Based off the Core Electronics Potentiometer module https://github.com/CoreElectronics/CE-PiicoDev-Buzzer-MicroPython-Module
- * Date: June 2022
+ * Date: 2022-07-04
  * An I2C based module that reads the PiicoDev Button
  *
  * Feel like supporting PiicoDev? Buy a module here:
@@ -10,7 +10,7 @@
  *
  */
 
-#define DEBUG true
+#define DEBUG false
 
 #if DEBUG == true
 #define debug(x)     Serial.print(x)
@@ -50,7 +50,7 @@ uint32_t buttonPressTime;
 // Prototyping with Arduino Uno
 #if defined(__AVR_ATmega328P__)
   const uint8_t powerLedPin = 13;
-  const uint16_t buttonPin = 3;
+  const uint16_t switchPin = 3;
   const uint16_t addressPin1 = 8;
   const uint16_t addressPin2 = 7;
   const uint16_t addressPin3 = 6;
@@ -58,7 +58,7 @@ uint32_t buttonPressTime;
 #else
   // ATTINY 8x6 or 16x6
   const uint8_t powerLedPin = PIN_PA3;
-  const uint16_t buttonPin = PIN_PA7;
+  const uint16_t switchPin = PIN_PA7;
   const uint8_t addressPin1 = PIN_PA1;
   const uint8_t addressPin2 = PIN_PC3;
   const uint8_t addressPin3 = PIN_PC2;
@@ -89,7 +89,6 @@ volatile uint8_t responseSize = 1; // Defines how many bytes of relevant data is
 
 #define STATUS_LAST_COMMAND_SUCCESS 1
 #define STATUS_LAST_COMMAND_KNOWN 2
-#define STATUS_DOUBLE_CLICK 3
 
 struct memoryMap {
   uint16_t id;
@@ -99,6 +98,8 @@ struct memoryMap {
   uint8_t i2cAddress;
   uint16_t pressCount;
   uint8_t led;
+  uint8_t state;
+  uint8_t doubleClickDetected;
   uint8_t debug;
   uint16_t doubleClickDuration;
   uint16_t debounceDelay;
@@ -115,11 +116,13 @@ const memoryMap registerMap = {
   .i2cAddress = 0x04,
   .pressCount = 0x05,
   .led = 0x07,
-  .debug = 0x08,
-  .doubleClickDuration = 0x21,
-  .debounceDelay = 0x23,
-  .doubleClickDurationOut = 0x31,
-  .debounceDelayOut = 0x33,
+  .state = 0x08,
+  .doubleClickDetected = 0x09,
+  .debug = 0x12,
+  .doubleClickDuration = 0xA1,
+  .debounceDelay = 0xA3,
+  .doubleClickDurationOut = 0x21,
+  .debounceDelayOut = 0x23,
 };
 
 volatile memoryMap valueMap = {
@@ -130,6 +133,8 @@ volatile memoryMap valueMap = {
   .i2cAddress = DEFAULT_I2C_ADDRESS,
   .pressCount = 0x00,
   .led = 0x01,
+  .state = 0x00,
+  .doubleClickDetected = 0x00,
   .debug = 0x00,
   .doubleClickDuration = DOUBLE_CLICK_DURATION,
   .debounceDelay = DEBOUNCE_DELAY,
@@ -151,6 +156,8 @@ void firmwareMinorReturn(char *data);
 void setAddress(char *data);
 void readPressCount(char *data);
 void setPowerLed(char *data);
+void readState(char *data);
+void readDoubleClickDetected(char *data);
 void debugReturn(char *data);
 void setDoubleClickDuration(char *data);
 void setDebounceDelay(char *data);
@@ -165,6 +172,8 @@ functionMap functions[] = {
   {registerMap.i2cAddress, setAddress},
   {registerMap.pressCount, readPressCount},
   {registerMap.led, setPowerLed},
+  {registerMap.state, readState},
+  {registerMap.doubleClickDetected, readDoubleClickDetected},
   {registerMap.debug, debugReturn},
   {registerMap.doubleClickDuration, setDoubleClickDuration},
   {registerMap.debounceDelay, setDebounceDelay},
@@ -178,7 +187,7 @@ void setup() {
   Serial.begin(115200);
 #endif
   debugln("Begin");
-  debugln(buttonPin);
+  debugln(switchPin);
 
   // Pull up address pins
   pinMode(addressPin1, INPUT_PULLUP);
@@ -186,14 +195,14 @@ void setup() {
   pinMode(addressPin3, INPUT_PULLUP);
   pinMode(addressPin4, INPUT_PULLUP);
   pinMode(powerLedPin, OUTPUT);
-  pinMode(buttonPin, INPUT_PULLUP);
+  pinMode(switchPin, INPUT_PULLUP);
   powerLed(true); // enable Power LED by default on every power-up
 
   set_sleep_mode(SLEEP_MODE_IDLE);
   sleep_enable();
   readSystemSettings(); //Load all system settings from EEPROM
 
-  attachInterrupt(digitalPinToInterrupt(buttonPin), buttonEvent, RISING);
+  attachInterrupt(digitalPinToInterrupt(switchPin), buttonEvent, RISING);
 
   startI2C();          //Determine the I2C address we should be using and begin listening on I2C bus
   oldAddress = valueMap.i2cAddress;
@@ -204,7 +213,7 @@ void loop() {
     startI2C(); // reinitialise I2C with new address, update EEPROM with custom address as necessary
     updateFlag = false;
   }
-  //sleep_mode();
+  sleep_mode();
 }
 
 // Begin listening on I2C bus as I2C slave using the global variable valueMap.i2cAddress

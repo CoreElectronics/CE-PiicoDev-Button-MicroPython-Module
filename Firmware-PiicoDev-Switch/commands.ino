@@ -22,8 +22,6 @@ void statusReturn(char *data) {
   responseType = RESPONSE_STATUS;
   loadArray((uint8_t)valueMap.status);
   valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
-  is the line below in the correct place?
-  bitClear(valueMap.status, STATUS_DOUBLE_CLICK);
 }
 
 void firmwareMajorReturn(char *data) {
@@ -42,6 +40,20 @@ void firmwareMinorReturn(char *data) {
 void setPowerLed(char *data) {
   powerLed( (data[0] == 1) );
   valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
+}
+
+void readState(char *data) {
+  valueMap.state = digitalRead(switchPin);
+  responseType = RESPONSE_VALUE;
+  loadArray((uint8_t)valueMap.state);
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
+}
+
+void readDoubleClickDetected(char *data) {
+  responseType = RESPONSE_VALUE;
+  loadArray((uint8_t)valueMap.doubleClickDetected);
+  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
+  valueMap.doubleClickDetected = 0;
 }
 
 void powerLed(bool state) {
