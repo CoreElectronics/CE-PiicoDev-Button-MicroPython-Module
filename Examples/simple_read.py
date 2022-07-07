@@ -1,9 +1,11 @@
-from PiicoDev_Potentiometer import PiicoDev_Potentiometer
+from PiicoDev_Switch import PiicoDev_Switch
 from PiicoDev_Unified import sleep_ms
  
-pot = PiicoDev_Potentiometer(min=0.0, max=100.0)   # Initialise the RFID module
+button = PiicoDev_Switch(debounce_window=90, double_click_duration=2000)   # Initialise the RFID module
 
 while True:
-    value = pot.read()
-    print(value)
-    sleep_ms(100)
+    if button.press_count:
+        print(1)
+    else:
+        print(0)
+    sleep_ms(10)

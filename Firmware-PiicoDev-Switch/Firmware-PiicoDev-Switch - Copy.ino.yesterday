@@ -10,7 +10,7 @@
 
 */
 
-#define DEBUG false
+#define DEBUG true
 
 #if DEBUG == true
 #define debug(x)     Serial.print(x)
@@ -28,7 +28,6 @@
 
 #define FIRMWARE_MAJOR 0x01
 #define FIRMWARE_MINOR 0x00
-
 #define DEVICE_ID 409
 #define DEFAULT_I2C_ADDRESS 0x42    // The default address when all switches are off
 #define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' minus 1 - addresses settable by switches
@@ -36,7 +35,6 @@
 #define HARDWARE_ADDRESS false
 #define I2C_BUFFER_SIZE 32 // For ATmega328 based Arduinos, the I2C buffer is limited to 32 bytes
 #define DOUBLE_CLICK_DURATION 300
-#define DEBOUNCE_DELAY 40
 #define EMA_PARAMETER 62
 #define EMA_PERIOD 20 // ms
 
@@ -46,7 +44,7 @@ enum eepromLocations {
 };
 
 uint8_t oldAddress;
-uint32_t switchPressTime;
+
 // EMA Variables
 float switchAvg;
 bool switchOn;
@@ -95,11 +93,14 @@ struct memoryMap {
   uint8_t led;
   uint8_t state;
   uint8_t doubleClickDetected;
-  uint16_t doubleClickDurationOut;
-  uint16_t debounceDelayOut;
-  uint8_t ledWrite;
+  uint8_t wasPressed;
   uint16_t doubleClickDuration;
-  uint16_t debounceDelay;
+  uint8_t emaParameter;
+  uint8_t emaPeriod;
+  uint8_t ledWrite;
+  uint16_t doubleClickDurationWrite;
+  uint8_t emaParameterWrite;
+  uint8_t emaPeriodWrite;
 };
 
 // Register addresses.
@@ -112,11 +113,14 @@ const memoryMap registerMap = {
   .led = 0x07,
   .state = 0x08,
   .doubleClickDetected = 0x09,
-  .doubleClickDurationOut = 0x21,
-  .debounceDelayOut = 0x23,
+  .wasPressed = 0x10,
+  .doubleClickDuration = 0x21,
+  .emaParameter = 0x23,
+  .emaPeriod = 0x24,
   .ledWrite = 0x87,
-  .doubleClickDuration = 0xA1,
-  .debounceDelay = 0xA3,
+  .doubleClickDurationWrite = 0xA1,
+  .emaParameterWrite = 0xA3,
+  .emaPeriodWrite = 0xA4,
 
 };
 
@@ -128,12 +132,15 @@ volatile memoryMap valueMap = {
   .pressCount = 0x00,
   .led = 0x01,
   .state = 0x00,
-  .doubleClickDetected = 0x00,
-  .doubleClickDurationOut = DOUBLE_CLICK_DURATION,
-  .debounceDelayOut = DEBOUNCE_DELAY,
-  .ledWrite = 0x01,
+  .doubleClickDetected = 0,
+  .wasPressed = 0,
   .doubleClickDuration = DOUBLE_CLICK_DURATION,
-  .debounceDelay = DEBOUNCE_DELAY,
+  .emaParameter = EMA_PARAMETER,
+  .emaPeriod = EMA_PERIOD,
+  .ledWrite = 0x01,
+  .doubleClickDurationWrite = DOUBLE_CLICK_DURATION,
+  .emaParameterWrite = EMA_PARAMETER,
+  .emaPeriodWrite = EMA_PERIOD,
 };
 
 uint8_t currentRegisterNumber;
@@ -151,11 +158,14 @@ void readPressCount(char *data);
 void getPowerLed(char *data);
 void readState(char *data);
 void readDoubleClickDetected(char *data);
+void readWasPressed(char *data);
 void getDoubleClickDuration(char *data);
-void getDebounceDelay(char *data);
+void getEMAParameter(char *data);
+void getEMAPeriod(char *data);
 void setPowerLed(char *data);
 void setDoubleClickDuration(char *data);
-void setDebounceDelay(char *data);
+void setEMAParameter(char *data);
+void setEMAPeriod(char *data);
 
 functionMap functions[] = {
   {registerMap.id, idReturn},
@@ -166,11 +176,14 @@ functionMap functions[] = {
   {registerMap.led, getPowerLed},
   {registerMap.state, readState},
   {registerMap.doubleClickDetected, readDoubleClickDetected},
-  {registerMap.doubleClickDurationOut, getDoubleClickDuration},
-  {registerMap.debounceDelayOut, getDebounceDelay},
+  {registerMap.wasPressed, readWasPressed},
+  {registerMap.doubleClickDuration, getDoubleClickDuration},
+  {registerMap.emaParameter, getEMAParameter},
+  {registerMap.emaPeriod, getEMAPeriod},
   {registerMap.ledWrite, setPowerLed},
   {registerMap.doubleClickDuration, setDoubleClickDuration},
-  {registerMap.debounceDelay, setDebounceDelay},
+  {registerMap.emaParameterWrite, setEMAParameter},
+  {registerMap.emaPeriodWrite, setEMAPeriod},
 };
 
 void setup() {
@@ -190,17 +203,15 @@ void setup() {
   pinMode(switchPin, INPUT_PULLUP);
   powerLed(true); // enable Power LED by default on every power-up
 
-  set_sleep_mode(SLEEP_MODE_IDLE);
-  sleep_enable();
+  //set_sleep_mode(SLEEP_MODE_IDLE);
+  //sleep_enable();
   readSystemSettings(); //Load all system settings from EEPROM
-
 
   startI2C();          //Determine the I2C address we should be using and begin listening on I2C bus
   oldAddress = valueMap.i2cAddress;
 }
-
 void loop() {
-  float a = 0.25;
+  float a = valueMap.emaParameter / 250.0;
   if (updateFlag) {
     startI2C(); // reinitialise I2C with new address, update EEPROM with custom address as necessary
     updateFlag = false;
@@ -226,7 +237,7 @@ void switchEvent() {
   debugln("Button Pressed");
   uint32_t now = millis();
   valueMap.pressCount++;
-//  valueMap.wasPressed = true;
+  valueMap.wasPressed = true;
   pos++;
   timeBuff[pos % 3] = now;
   if (timeBuff[pos % 3] - timeBuff[(pos - 1) % 3] < valueMap.doubleClickDuration) {

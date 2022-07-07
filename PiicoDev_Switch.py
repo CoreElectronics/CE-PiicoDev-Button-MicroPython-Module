@@ -17,9 +17,11 @@ _REG_PRESS_COUNT           = 0x05
 _REG_LED                   = 0x07
 _REG_STATE                 = 0x08
 _REG_DOUBLE_CLICK_DETECTED = 0x09
+_REG_WAS_PRESSED           = 0x10
 _REG_WHOAMI                = 0x11
 _REG_DOUBLE_CLICK_DURATION = 0x21
-_REG_DEBOUNCE_WINDOW       = 0x23
+_REG_EMA_PARAMETER         = 0x23
+_REG_EMA_PERIOD            = 0x24
 
 def _read_bit(x, n):
     return x & 1 << n != 0
@@ -95,7 +97,7 @@ class PiicoDev_Switch(object):
     @property    
     def was_pressed(self):
         """Returns the current state of the button.  `True` for pressed and `False` for not pressed"""
-        if self.press_count == 0:
+        if self._read_int(_REG_WAS_PRESSED, 1) == 0:
             return False
         else:
             return True
@@ -118,14 +120,24 @@ class PiicoDev_Switch(object):
         self._write_int(_set_bit(_REG_DOUBLE_CLICK_DURATION, 7), value, 2)
         
     @property
-    def debounce_window(self):
-        """Returns the period of time between each click to register as a click"""
-        return self._read_int(_REG_DEBOUNCE_WINDOW, 2)
+    def ema_parameter(self):
+        """Returns the EMA parameter"""
+        return self._read_int(_REG_EMA_PARAMETER)
+    
+    @ema_parameter.setter
+    def ema_parameter(self, value):
+        """Sets the EMA parameter"""
+        self._write_int(_set_bit(_REG_EMA_PARAMETER, 7), value)
+        
+    @property
+    def ema_period(self):
+        """Returns the EMA period"""
+        return self._read_int(_REG_EMA_PERIOD)
     
     @debounce_window.setter
-    def debounce_window(self, value):
-        """Sets the period of time between each click to register as a click"""
-        self._write_int(_set_bit(_REG_DEBOUNCE_WINDOW, 7), value, 2)
+    def ema_period(self, value):
+        """Sets the EMA period"""
+        self._write_int(_set_bit(_REG_EMA_PERIOD, 7), value)
 
     @property
     def address(self):

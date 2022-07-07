@@ -10,17 +10,21 @@ while True:
     print('ID: ' + str(button.whoami))
     print('Flashing LED 3 times...')
     for x in range(3):
+        print('her')
         button.led = False
+        print('here')
         print("LED ON: " + str(button.led))
-        sleep_ms(1000)
+        sleep_ms(500)
         button.led = True
         print("LED ON: " + str(button.led))
-        sleep_ms(1000)
+        sleep_ms(500)
+    print('Button was pressed: ' + str(button.was_pressed))
     print('Button press count: ' + str(button.press_count))
     #switch.double_click_duration = 0
     print('double_click_duration: ' + str(button.double_click_duration))
-    print('debounce_window: ' + str(button.debounce_window))
+    print('EMA Parameter: ' + str(button.ema_parameter))
+    print('EMA Window: ' + str(button.ema_period))
     print('Is Pressed: ' + str(button.is_pressed))
-    print('double_click_detected: ' + str(button.double_click_detected))
+    print('was_double_pressed: ' + str(button.was_double_pressed))
     #switch.setI2Caddr(0x20)
-    sleep_ms(5000)
+    sleep_ms(4000)
