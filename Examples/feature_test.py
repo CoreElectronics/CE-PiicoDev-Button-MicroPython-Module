@@ -23,7 +23,7 @@ while True:
     #switch.double_click_duration = 0
     print('double_click_duration: ' + str(button.double_click_duration))
     print('EMA Parameter: ' + str(button.ema_parameter))
-    print('EMA Window: ' + str(button.ema_period))
+    print('EMA Period: ' + str(button.ema_period))
     print('Is Pressed: ' + str(button.is_pressed))
     print('was_double_pressed: ' + str(button.was_double_pressed))
     #switch.setI2Caddr(0x20)

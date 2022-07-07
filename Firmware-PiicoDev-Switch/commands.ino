@@ -54,6 +54,13 @@ void getDoubleClickDuration(char *data) {
   loadArray(valueMap.doubleClickDuration);
 }
 
+void getEMAParameter(char *data) {
+  loadArray(valueMap.emaParameter);
+}
+
+void getEMAPeriod(char *data) {
+  loadArray(valueMap.emaPeriod);
+}
 
 
 
@@ -70,6 +77,15 @@ void setDoubleClickDuration(char *data) {
   valueMap.doubleClickDuration = valueMap.doubleClickDurationWrite;
 }
 
+void setEMAParameter(char *data) {
+  valueMap.emaParameterWrite = data[0];
+  valueMap.emaParameter = valueMap.emaParameterWrite;
+}
+
+void setEMAPeriod(char *data) {
+  valueMap.emaPeriodWrite = data[0];
+  valueMap.emaPeriod = valueMap.emaPeriodWrite;
+}
 
 void setAddress(char *data) {
   uint8_t tempAddress = data[0];

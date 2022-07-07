@@ -95,8 +95,12 @@ struct memoryMap {
   uint8_t doubleClickDetected;
   uint8_t wasPressed;
   uint16_t doubleClickDuration;
+  uint8_t emaParameter;
+  uint8_t emaPeriod;
   uint8_t ledWrite;
   uint16_t doubleClickDurationWrite;
+  uint8_t emaParameterWrite;
+  uint8_t emaPeriodWrite;
 };
 
 // Register addresses.
@@ -111,8 +115,12 @@ const memoryMap registerMap = {
   .doubleClickDetected = 0x09,
   .wasPressed = 0x10,
   .doubleClickDuration = 0x21,
+  .emaParameter = 0x23,
+  .emaPeriod = 0x24,
   .ledWrite = 0x87,
   .doubleClickDurationWrite = 0xA1,
+  .emaParameterWrite = 0xA3,
+  .emaPeriodWrite = 0xA4,
 
 };
 
@@ -127,8 +135,12 @@ volatile memoryMap valueMap = {
   .doubleClickDetected = 0x00,
   .wasPressed = 0,
   .doubleClickDuration = DOUBLE_CLICK_DURATION,
+  .emaParameter = EMA_PARAMETER,
+  .emaPeriod = EMA_PERIOD,
   .ledWrite = 0x01,
   .doubleClickDurationWrite = DOUBLE_CLICK_DURATION,
+  .emaParameterWrite = EMA_PARAMETER,
+  .emaPeriodWrite = EMA_PERIOD,
 };
 
 uint8_t currentRegisterNumber;
@@ -148,8 +160,12 @@ void readState(char *data);
 void readDoubleClickDetected(char *data);
 void readWasPressed(char *data);
 void getDoubleClickDuration(char *data);
+void getEMAParameter(char *data);
+void getEMAPeriod(char *data);
 void setPowerLed(char *data);
 void setDoubleClickDuration(char *data);
+void setEMAParameter(char *data);
+void setEMAPeriod(char *data);
 
 functionMap functions[] = {
   {registerMap.id, idReturn},
@@ -162,8 +178,12 @@ functionMap functions[] = {
   {registerMap.doubleClickDetected, readDoubleClickDetected},
   {registerMap.wasPressed, readWasPressed},
   {registerMap.doubleClickDuration, getDoubleClickDuration},
+  {registerMap.emaParameter, getEMAParameter},
+  {registerMap.emaPeriod, getEMAPeriod},
   {registerMap.ledWrite, setPowerLed},
   {registerMap.doubleClickDurationWrite, setDoubleClickDuration},
+  {registerMap.emaParameterWrite, setEMAParameter},
+  {registerMap.emaPeriodWrite, setEMAPeriod},
 };
 
 void setup() {
