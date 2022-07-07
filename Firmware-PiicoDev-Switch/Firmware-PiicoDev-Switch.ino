@@ -94,9 +94,9 @@ struct memoryMap {
   uint8_t state;
   uint8_t doubleClickDetected;
   uint8_t wasPressed;
-  uint16_t doubleClickDurationOut;
-  uint8_t ledWrite;
   uint16_t doubleClickDuration;
+  uint8_t ledWrite;
+  uint16_t doubleClickDurationWrite;
 };
 
 // Register addresses.
@@ -110,9 +110,9 @@ const memoryMap registerMap = {
   .state = 0x08,
   .doubleClickDetected = 0x09,
   .wasPressed = 0x10,
-  .doubleClickDurationOut = 0x21,
+  .doubleClickDuration = 0x21,
   .ledWrite = 0x87,
-  .doubleClickDuration = 0xA1,
+  .doubleClickDurationWrite = 0xA1,
 
 };
 
@@ -126,9 +126,9 @@ volatile memoryMap valueMap = {
   .state = 0x00,
   .doubleClickDetected = 0x00,
   .wasPressed = 0,
-  .doubleClickDurationOut = DOUBLE_CLICK_DURATION,
-  .ledWrite = 0x01,
   .doubleClickDuration = DOUBLE_CLICK_DURATION,
+  .ledWrite = 0x01,
+  .doubleClickDurationWrite = DOUBLE_CLICK_DURATION,
 };
 
 uint8_t currentRegisterNumber;
@@ -161,9 +161,9 @@ functionMap functions[] = {
   {registerMap.state, readState},
   {registerMap.doubleClickDetected, readDoubleClickDetected},
   {registerMap.wasPressed, readWasPressed},
-  {registerMap.doubleClickDurationOut, getDoubleClickDuration},
+  {registerMap.doubleClickDuration, getDoubleClickDuration},
   {registerMap.ledWrite, setPowerLed},
-  {registerMap.doubleClickDuration, setDoubleClickDuration},
+  {registerMap.doubleClickDurationWrite, setDoubleClickDuration},
 };
 
 void setup() {

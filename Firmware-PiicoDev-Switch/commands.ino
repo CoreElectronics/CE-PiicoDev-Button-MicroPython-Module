@@ -22,16 +22,6 @@ void firmwareMinorReturn(char *data) {
   loadArray((uint8_t)valueMap.firmwareMinor);
 }
 
-void getPowerLed(char *data) {
-  valueMap.led = digitalRead(powerLedPin);
-  loadArray((uint8_t)valueMap.led);
-}
-
-// Control the power LED
-void setPowerLed(char *data) {
-  powerLed( (data[0] == 1) );
-}
-
 void readState(char *data) {
   valueMap.state = digitalRead(switchPin);
   loadArray((uint8_t)valueMap.state);
@@ -55,16 +45,30 @@ void powerLed(bool state) {
   }
 }
 
-void setDoubleClickDuration(char *data) {
-  valueMap.doubleClickDuration = (uint8_t(data[0]) << 8) + uint8_t(data[1]);
+void getPowerLed(char *data) {
+  valueMap.led = digitalRead(powerLedPin);
+  loadArray((uint8_t)valueMap.led);
 }
-
-
 
 void getDoubleClickDuration(char *data) {
   loadArray(valueMap.doubleClickDuration);
 }
 
+
+
+
+
+// Control the power LED
+void setPowerLed(char *data) {
+  powerLed( (data[0] == 1) );
+}
+
+
+
+void setDoubleClickDuration(char *data) {
+  valueMap.doubleClickDurationWrite = (uint8_t(data[0]) << 8) + uint8_t(data[1]);
+  valueMap.doubleClickDuration = valueMap.doubleClickDurationWrite;
+}
 
 
 void setAddress(char *data) {
