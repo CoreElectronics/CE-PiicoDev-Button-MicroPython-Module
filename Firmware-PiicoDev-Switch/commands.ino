@@ -42,6 +42,11 @@ void readDoubleClickDetected(char *data) {
   valueMap.doubleClickDetected = 0;
 }
 
+void readWasPressed(char *data) {
+  loadArray((uint8_t)valueMap.wasPressed);
+  valueMap.wasPressed = false;
+}
+
 void powerLed(bool state) {
   if (state) {
     digitalWrite(powerLedPin, true);

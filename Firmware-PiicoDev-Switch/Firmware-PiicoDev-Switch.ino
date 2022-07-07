@@ -46,7 +46,7 @@ enum eepromLocations {
 };
 
 uint8_t oldAddress;
-uint32_t switchPressTime;
+
 // EMA Variables
 float switchAvg;
 bool switchOn;
@@ -95,6 +95,7 @@ struct memoryMap {
   uint8_t led;
   uint8_t state;
   uint8_t doubleClickDetected;
+  uint8_t wasPressed;
   uint16_t doubleClickDurationOut;
   uint16_t debounceDelayOut;
   uint8_t ledWrite;
@@ -112,6 +113,7 @@ const memoryMap registerMap = {
   .led = 0x07,
   .state = 0x08,
   .doubleClickDetected = 0x09,
+  .wasPressed = 0x10,
   .doubleClickDurationOut = 0x21,
   .debounceDelayOut = 0x23,
   .ledWrite = 0x87,
@@ -129,6 +131,7 @@ volatile memoryMap valueMap = {
   .led = 0x01,
   .state = 0x00,
   .doubleClickDetected = 0x00,
+  .wasPressed = 0,
   .doubleClickDurationOut = DOUBLE_CLICK_DURATION,
   .debounceDelayOut = DEBOUNCE_DELAY,
   .ledWrite = 0x01,
@@ -151,6 +154,7 @@ void readPressCount(char *data);
 void getPowerLed(char *data);
 void readState(char *data);
 void readDoubleClickDetected(char *data);
+void readWasPressed(char *data);
 void getDoubleClickDuration(char *data);
 void getDebounceDelay(char *data);
 void setPowerLed(char *data);
@@ -166,6 +170,7 @@ functionMap functions[] = {
   {registerMap.led, getPowerLed},
   {registerMap.state, readState},
   {registerMap.doubleClickDetected, readDoubleClickDetected},
+  {registerMap.wasPressed, readWasPressed},
   {registerMap.doubleClickDurationOut, getDoubleClickDuration},
   {registerMap.debounceDelayOut, getDebounceDelay},
   {registerMap.ledWrite, setPowerLed},
@@ -226,7 +231,7 @@ void switchEvent() {
   debugln("Button Pressed");
   uint32_t now = millis();
   valueMap.pressCount++;
-//  valueMap.wasPressed = true;
+  valueMap.wasPressed = true;
   pos++;
   timeBuff[pos % 3] = now;
   if (timeBuff[pos % 3] - timeBuff[(pos - 1) % 3] < valueMap.doubleClickDuration) {
