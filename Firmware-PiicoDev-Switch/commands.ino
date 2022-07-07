@@ -6,53 +6,39 @@
 #define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
 
 void readPressCount(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray((uint16_t)valueMap.pressCount);
   valueMap.pressCount = 0;
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void idReturn(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray((uint16_t)valueMap.id);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
-}
-
-void statusReturn(char *data) {
-  responseType = RESPONSE_STATUS;
-  loadArray((uint8_t)valueMap.status);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void firmwareMajorReturn(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.firmwareMajor);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void firmwareMinorReturn(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.firmwareMinor);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
+}
+
+void getPowerLed(char *data) {
+  valueMap.led = digitalRead(powerLedPin);
+  loadArray((uint8_t)valueMap.led);
 }
 
 // Control the power LED
 void setPowerLed(char *data) {
   powerLed( (data[0] == 1) );
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void readState(char *data) {
   valueMap.state = digitalRead(switchPin);
-  responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.state);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void readDoubleClickDetected(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray((uint8_t)valueMap.doubleClickDetected);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
   valueMap.doubleClickDetected = 0;
 }
 
@@ -66,30 +52,18 @@ void powerLed(bool state) {
 
 void setDoubleClickDuration(char *data) {
   valueMap.doubleClickDuration = (uint8_t(data[0]) << 8) + uint8_t(data[1]);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void setDebounceDelay(char *data) {
   valueMap.debounceDelay = (uint8_t(data[0]) << 8) + uint8_t(data[1]);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void getDoubleClickDuration(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray(valueMap.doubleClickDuration);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void getDebounceDelay(char *data) {
-  responseType = RESPONSE_VALUE;
   loadArray(valueMap.debounceDelay);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
-}
-
-void debugReturn(char *data) {
-  responseType = RESPONSE_VALUE;
-  loadArray(valueMap.debug);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
 }
 
 void setAddress(char *data) {
@@ -100,7 +74,6 @@ void setAddress(char *data) {
   valueMap.i2cAddress = tempAddress;
 
   EEPROM.put(LOCATION_ADDRESS_TYPE, SOFTWARE_ADDRESS);
-  valueMap.status |= (1 << STATUS_LAST_COMMAND_SUCCESS);
   updateFlag = true; // will trigger a I2C re-initalise and save custom address to EEPROM
 }
 

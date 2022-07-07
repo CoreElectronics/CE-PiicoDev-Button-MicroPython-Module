@@ -1,12 +1,14 @@
-from PiicoDev_Potentiometer import PiicoDev_Potentiometer
+from PiicoDev_Switch import PiicoDev_Switch
 from PiicoDev_Unified import sleep_ms
  
-pot = PiicoDev_Potentiometer(min=300, max=50)   # Initialise the module
+button = PiicoDev_Switch()   # Initialise the module
 
 while True:
-    value = int(pot.read())
+    value = int(button.count)
+    while button.count == 0:
+        sleep_ms(10)
     print('Value: ' + str(value))
-    pot.pwrLED(False)
-    sleep_ms(value)
-    pot.pwrLED(True)
-    sleep_ms(value)
+    button.led = False
+    while button.count == 0:
+        sleep_ms(10)
+    button.led = True

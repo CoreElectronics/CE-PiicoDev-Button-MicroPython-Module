@@ -44,7 +44,7 @@ enum eepromLocations {
 };
 
 uint8_t oldAddress;
-uint32_t buttonPressTime;
+uint32_t switchPressTime;
 
 // Hardware Connectins
 // Prototyping with Arduino Uno
@@ -65,34 +65,19 @@ uint32_t buttonPressTime;
   const uint8_t addressPin4 = PIN_PC1;
 #endif
 
-
 // System global variables
 volatile bool updateFlag = true; // Goes true when new data received. Cause LEDs to update
 volatile uint32_t lastSyncTime = 0;
-
-// volatile uint16_t frequency = 0;
-// volatile uint16_t duration = 0;
 
 #define LOCAL_BUFFER_SIZE 20 // bytes
 uint8_t incomingData[LOCAL_BUFFER_SIZE]; // Local buffer to record I2C bytes before committing to file, add 1 for 0 character on end
 volatile uint16_t incomingDataSpot = 0; // Keeps track of where we are in the incoming buffer
 
-//These are the different types of data the device can respond with
-enum Response {
-  RESPONSE_STATUS, // 1 byte containing status bits
-  RESPONSE_VALUE, // Value byte containing measurements etc.
-};
-
-volatile Response responseType = RESPONSE_STATUS; // State engine that let's us know what the master is asking for
 uint8_t responseBuffer[I2C_BUFFER_SIZE]; // Used to pass data back to master
 volatile uint8_t responseSize = 1; // Defines how many bytes of relevant data is contained in the responseBuffer
 
-#define STATUS_LAST_COMMAND_SUCCESS 1
-#define STATUS_LAST_COMMAND_KNOWN 2
-
 struct memoryMap {
   uint16_t id;
-  uint8_t status;
   uint8_t firmwareMajor;
   uint8_t firmwareMinor;
   uint8_t i2cAddress;
@@ -100,17 +85,16 @@ struct memoryMap {
   uint8_t led;
   uint8_t state;
   uint8_t doubleClickDetected;
-  uint8_t debug;
-  uint16_t doubleClickDuration;
-  uint16_t debounceDelay;
   uint16_t doubleClickDurationOut;
   uint16_t debounceDelayOut;
+    uint8_t ledWrite;
+  uint16_t doubleClickDuration;
+  uint16_t debounceDelay;
 };
 
 // Register addresses.
 const memoryMap registerMap = {
   .id = 0x11,
-  .status = 0x01,
   .firmwareMajor = 0x02,
   .firmwareMinor = 0x03,
   .i2cAddress = 0x04,
@@ -118,16 +102,16 @@ const memoryMap registerMap = {
   .led = 0x07,
   .state = 0x08,
   .doubleClickDetected = 0x09,
-  .debug = 0x12,
-  .doubleClickDuration = 0xA1,
-  .debounceDelay = 0xA3,
   .doubleClickDurationOut = 0x21,
   .debounceDelayOut = 0x23,
+  .ledWrite = 0x87,
+  .doubleClickDuration = 0xA1,
+  .debounceDelay = 0xA3,
+
 };
 
 volatile memoryMap valueMap = {
   .id = DEVICE_ID,
-  .status = 0x00,
   .firmwareMajor = FIRMWARE_MAJOR,
   .firmwareMinor = FIRMWARE_MINOR,
   .i2cAddress = DEFAULT_I2C_ADDRESS,
@@ -135,11 +119,11 @@ volatile memoryMap valueMap = {
   .led = 0x01,
   .state = 0x00,
   .doubleClickDetected = 0x00,
-  .debug = 0x00,
-  .doubleClickDuration = DOUBLE_CLICK_DURATION,
-  .debounceDelay = DEBOUNCE_DELAY,
   .doubleClickDurationOut = DOUBLE_CLICK_DURATION,
   .debounceDelayOut = DEBOUNCE_DELAY,
+  .ledWrite = 0x01,
+  .doubleClickDuration = DOUBLE_CLICK_DURATION,
+  .debounceDelay = DEBOUNCE_DELAY,
 };
 
 uint8_t currentRegisterNumber;
@@ -150,35 +134,33 @@ struct functionMap {
 };
 
 void idReturn(char *data);
-void statusReturn(char *data);
 void firmwareMajorReturn(char *data);
 void firmwareMinorReturn(char *data);
 void setAddress(char *data);
 void readPressCount(char *data);
-void setPowerLed(char *data);
+void getPowerLed(char *data);
 void readState(char *data);
 void readDoubleClickDetected(char *data);
-void debugReturn(char *data);
-void setDoubleClickDuration(char *data);
-void setDebounceDelay(char *data);
 void getDoubleClickDuration(char *data);
 void getDebounceDelay(char *data);
+void setPowerLed(char *data);
+void setDoubleClickDuration(char *data);
+void setDebounceDelay(char *data);
 
 functionMap functions[] = {
   {registerMap.id, idReturn},
-  {registerMap.status, statusReturn},
   {registerMap.firmwareMajor, firmwareMajorReturn},
   {registerMap.firmwareMinor, firmwareMinorReturn},
   {registerMap.i2cAddress, setAddress},
   {registerMap.pressCount, readPressCount},
-  {registerMap.led, setPowerLed},
+  {registerMap.led, getPowerLed},
   {registerMap.state, readState},
   {registerMap.doubleClickDetected, readDoubleClickDetected},
-  {registerMap.debug, debugReturn},
-  {registerMap.doubleClickDuration, setDoubleClickDuration},
-  {registerMap.debounceDelay, setDebounceDelay},
   {registerMap.doubleClickDurationOut, getDoubleClickDuration},
   {registerMap.debounceDelayOut, getDebounceDelay},
+  {registerMap.ledWrite, setPowerLed},
+  {registerMap.doubleClickDuration, setDoubleClickDuration},
+  {registerMap.debounceDelay, setDebounceDelay},
 };
 
 void setup() {
@@ -202,7 +184,7 @@ void setup() {
   sleep_enable();
   readSystemSettings(); //Load all system settings from EEPROM
 
-  attachInterrupt(digitalPinToInterrupt(switchPin), buttonEvent, RISING);
+  attachInterrupt(digitalPinToInterrupt(switchPin), switchEvent, RISING);
 
   startI2C();          //Determine the I2C address we should be using and begin listening on I2C bus
   oldAddress = valueMap.i2cAddress;
