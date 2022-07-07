@@ -28,7 +28,6 @@
 
 #define FIRMWARE_MAJOR 0x01
 #define FIRMWARE_MINOR 0x00
-
 #define DEVICE_ID 409
 #define DEFAULT_I2C_ADDRESS 0x42    // The default address when all switches are off
 #define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' minus 1 - addresses settable by switches
@@ -36,7 +35,6 @@
 #define HARDWARE_ADDRESS false
 #define I2C_BUFFER_SIZE 32 // For ATmega328 based Arduinos, the I2C buffer is limited to 32 bytes
 #define DOUBLE_CLICK_DURATION 300
-#define DEBOUNCE_DELAY 40
 #define EMA_PARAMETER 62
 #define EMA_PERIOD 20 // ms
 
@@ -97,10 +95,8 @@ struct memoryMap {
   uint8_t doubleClickDetected;
   uint8_t wasPressed;
   uint16_t doubleClickDurationOut;
-  uint16_t debounceDelayOut;
   uint8_t ledWrite;
   uint16_t doubleClickDuration;
-  uint16_t debounceDelay;
 };
 
 // Register addresses.
@@ -115,10 +111,8 @@ const memoryMap registerMap = {
   .doubleClickDetected = 0x09,
   .wasPressed = 0x10,
   .doubleClickDurationOut = 0x21,
-  .debounceDelayOut = 0x23,
   .ledWrite = 0x87,
   .doubleClickDuration = 0xA1,
-  .debounceDelay = 0xA3,
 
 };
 
@@ -133,10 +127,8 @@ volatile memoryMap valueMap = {
   .doubleClickDetected = 0x00,
   .wasPressed = 0,
   .doubleClickDurationOut = DOUBLE_CLICK_DURATION,
-  .debounceDelayOut = DEBOUNCE_DELAY,
   .ledWrite = 0x01,
   .doubleClickDuration = DOUBLE_CLICK_DURATION,
-  .debounceDelay = DEBOUNCE_DELAY,
 };
 
 uint8_t currentRegisterNumber;
@@ -156,10 +148,8 @@ void readState(char *data);
 void readDoubleClickDetected(char *data);
 void readWasPressed(char *data);
 void getDoubleClickDuration(char *data);
-void getDebounceDelay(char *data);
 void setPowerLed(char *data);
 void setDoubleClickDuration(char *data);
-void setDebounceDelay(char *data);
 
 functionMap functions[] = {
   {registerMap.id, idReturn},
@@ -172,10 +162,8 @@ functionMap functions[] = {
   {registerMap.doubleClickDetected, readDoubleClickDetected},
   {registerMap.wasPressed, readWasPressed},
   {registerMap.doubleClickDurationOut, getDoubleClickDuration},
-  {registerMap.debounceDelayOut, getDebounceDelay},
   {registerMap.ledWrite, setPowerLed},
   {registerMap.doubleClickDuration, setDoubleClickDuration},
-  {registerMap.debounceDelay, setDebounceDelay},
 };
 
 void setup() {

@@ -59,17 +59,13 @@ void setDoubleClickDuration(char *data) {
   valueMap.doubleClickDuration = (uint8_t(data[0]) << 8) + uint8_t(data[1]);
 }
 
-void setDebounceDelay(char *data) {
-  valueMap.debounceDelay = (uint8_t(data[0]) << 8) + uint8_t(data[1]);
-}
+
 
 void getDoubleClickDuration(char *data) {
   loadArray(valueMap.doubleClickDuration);
 }
 
-void getDebounceDelay(char *data) {
-  loadArray(valueMap.debounceDelay);
-}
+
 
 void setAddress(char *data) {
   uint8_t tempAddress = data[0];
