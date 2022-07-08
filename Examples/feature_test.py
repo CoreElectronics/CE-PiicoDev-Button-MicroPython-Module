@@ -10,9 +10,7 @@ while True:
     print('ID: ' + str(button.whoami))
     print('Flashing LED 3 times...')
     for x in range(3):
-        print('her')
         button.led = False
-        print('here')
         print("LED ON: " + str(button.led))
         sleep_ms(500)
         button.led = True

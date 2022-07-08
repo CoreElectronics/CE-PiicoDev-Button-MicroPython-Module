@@ -210,7 +210,7 @@ void setup() {
 }
 
 void loop() {
-  float a = 0.25;
+  float a = valueMap.emaParameter / 250.0;
   if (updateFlag) {
     startI2C(); // reinitialise I2C with new address, update EEPROM with custom address as necessary
     updateFlag = false;
@@ -226,10 +226,7 @@ void loop() {
     switchEvent();
   }
   switchOnPrev = switchOn;
-
-//TODO 
-  //delay(valueMap.emaPeriod);
-  delay(20);
+  delay(valueMap.emaPeriod);
 }
 
 void switchEvent() {

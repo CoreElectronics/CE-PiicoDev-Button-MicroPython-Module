@@ -30,7 +30,7 @@ def _set_bit(x, n):
     return x | (1 << n)
 
 class PiicoDev_Switch(object):
-    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, double_click_duration=300, debounce_window=40):
+    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, double_click_duration=300):
         try:
             if compat_ind >= 1:
                 pass
@@ -41,9 +41,8 @@ class PiicoDev_Switch(object):
         self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
         self._address = address
         self.double_click_duration = double_click_duration
-        self.debounce_window = debounce_window
-        self.last_command_known = False
-        self.last_command_success = False
+        self.ema_parameter = 63
+        self.ema_period = 25
         if type(id) is list and not all(v == 0 for v in id): # preference using the ID argument. ignore id if all elements zero
             assert max(id) <= 1 and min(id) >= 0 and len(id) == 4, "id must be a list of 1/0, length=4"
             self._address=8+id[0]+2*id[1]+4*id[2]+8*id[3] # select address from pool
@@ -134,7 +133,7 @@ class PiicoDev_Switch(object):
         """Returns the EMA period"""
         return self._read_int(_REG_EMA_PERIOD)
     
-    @debounce_window.setter
+    @ema_period.setter
     def ema_period(self, value):
         """Sets the EMA period"""
         self._write_int(_set_bit(_REG_EMA_PERIOD, 7), value)
