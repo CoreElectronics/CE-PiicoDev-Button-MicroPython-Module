@@ -4,11 +4,9 @@ from PiicoDev_Unified import sleep_ms
 button = PiicoDev_Switch()   # Initialise the module
 
 while True:
-    value = int(button.count)
-    while button.count == 0:
+    while button.was_pressed == False:
         sleep_ms(10)
-    print('Value: ' + str(value))
     button.led = False
-    while button.count == 0:
+    while button.was_pressed == False:
         sleep_ms(10)
     button.led = True

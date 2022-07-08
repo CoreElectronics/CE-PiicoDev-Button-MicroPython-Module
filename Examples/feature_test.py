@@ -18,7 +18,6 @@ while True:
         sleep_ms(500)
     print('Button was pressed: ' + str(button.was_pressed))
     print('Button press count: ' + str(button.press_count))
-    #switch.double_click_duration = 0
     print('double_click_duration: ' + str(button.double_click_duration))
     print('EMA Parameter: ' + str(button.ema_parameter))
     print('EMA Period: ' + str(button.ema_period))
