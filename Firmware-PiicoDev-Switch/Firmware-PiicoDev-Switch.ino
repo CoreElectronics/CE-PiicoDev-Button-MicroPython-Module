@@ -132,7 +132,7 @@ volatile memoryMap valueMap = {
   .pressCount = 0x00,
   .led = 0x01,
   .state = 0x00,
-  .doubleClickDetected = 0x00,
+  .doubleClickDetected = 0,
   .wasPressed = 0,
   .doubleClickDuration = DOUBLE_CLICK_DURATION,
   .emaParameter = EMA_PARAMETER,
@@ -203,10 +203,7 @@ void setup() {
   pinMode(switchPin, INPUT_PULLUP);
   powerLed(true); // enable Power LED by default on every power-up
 
-  set_sleep_mode(SLEEP_MODE_IDLE);
-  sleep_enable();
   readSystemSettings(); //Load all system settings from EEPROM
-
 
   startI2C();          //Determine the I2C address we should be using and begin listening on I2C bus
   oldAddress = valueMap.i2cAddress;

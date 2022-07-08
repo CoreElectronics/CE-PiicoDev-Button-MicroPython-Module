@@ -62,15 +62,10 @@ void getEMAPeriod(char *data) {
   loadArray(valueMap.emaPeriod);
 }
 
-
-
-
 // Control the power LED
 void setPowerLed(char *data) {
   powerLed( (data[0] == 1) );
 }
-
-
 
 void setDoubleClickDuration(char *data) {
   valueMap.doubleClickDurationWrite = (uint8_t(data[0]) << 8) + uint8_t(data[1]);
