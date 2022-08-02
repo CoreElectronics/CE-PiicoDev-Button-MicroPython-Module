@@ -1,12 +1,10 @@
 # PiicoDev® Button (Switch) MicroPython Module and Firmware
 
-This is the firmware repo for the [Core Electronics PiicoDev® XXXXXX](https://core-electronics.com.au/catalog/product/view/sku/XXXXXX)
+This is the firmware repo for the [Core Electronics PiicoDev® Button](https://core-electronics.com.au/catalog/product/view/sku/CE08500)
 
 This module depends on the [PiicoDev Unified Library](https://github.com/CoreElectronics/CE-PiicoDev-Unified), include `PiicoDev_Unified.py` in the project directory on your MicroPython device.
 
-<!-- TODO update tutorial link with the device tinyurl eg. piico.dev/p1
-See the [Quickstart Guide](https://piico.dev/pX)
- -->
+See the [Quickstart Guide](https://piico.dev/p21)
 
  # Reference
 
