@@ -15,7 +15,7 @@ See the [Quickstart Guide](https://piico.dev/p21)
 | freq        | int   | 100 to 1000000   | Device dependent                      | I2C Bus frequency (Hz).  Ignored on Raspberry Pi |
 | sda         | Pin   | Device Dependent | Device Dependent                      | I2C SDA Pin. Implemented on Raspberry Pi Pico only |
 | scl         | Pin   | Device Dependent | Device Dependent                      | I2C SCL Pin. Implemented on Raspberry Pi Pico only |
-|address      | int   | 0x42 | 0x42, 0x08 - 0x77 | Manually specify the address of the connected device. For when a software address is set on the device.
+|address      | int   | 0x42, 0x08 - 0x77 | 0x42 | Manually specify the address of the connected device. For when a software address is set on the device.
 |id           | List[int, int, int, int] | 1=ON, 0=OFF | [0,0,0,0] | Hardware switches change the device address - Abstracts the need for user to look up an address, simply input the switch positions. Alternatively, use `address` for explicit address.
 | double_click_duration | int |                  | 300                                 | If the button is pressed twice within this period (ms) a double-click will be registered |
 
