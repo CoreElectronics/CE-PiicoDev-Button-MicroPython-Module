@@ -2,9 +2,6 @@
   User accessible functions
 */
 
-// Macro for number of elements in an array
-#define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
-
 void readPressCount(char *data) {
   loadArray((uint16_t)valueMap.pressCount);
   valueMap.pressCount = 0;
@@ -38,11 +35,7 @@ void readWasPressed(char *data) {
 }
 
 void powerLed(bool state) {
-  if (state) {
-    digitalWrite(powerLedPin, true);
-  } else {
-    digitalWrite(powerLedPin, false);
-  }
+    digitalWrite(powerLedPin, state);
 }
 
 void getPowerLed(char *data) {

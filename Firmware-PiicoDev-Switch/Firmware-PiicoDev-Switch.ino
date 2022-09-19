@@ -35,7 +35,7 @@
 #define HARDWARE_ADDRESS false
 #define I2C_BUFFER_SIZE 32 // For ATmega328 based Arduinos, the I2C buffer is limited to 32 bytes
 #define DOUBLE_CLICK_DURATION 300
-#define EMA_PARAMETER 62
+#define EMA_PARAMETER 63
 #define EMA_PERIOD 20 // ms
 
 enum eepromLocations {
@@ -53,6 +53,8 @@ bool switchOnPrev;
 // Double-click detection variables
 uint32_t timeBuff[3];
 uint8_t pos = 0;
+
+uint32_t millisSinceButtonRead;
 
 // Hardware Connectins
 // Prototyping with Arduino Uno
@@ -105,22 +107,22 @@ struct memoryMap {
 
 // Register addresses.
 const memoryMap registerMap = {
-  .id = 0x11,
+  .id = 0x01,
   .firmwareMajor = 0x02,
   .firmwareMinor = 0x03,
   .i2cAddress = 0x04,
-  .pressCount = 0x05,
-  .led = 0x07,
-  .state = 0x08,
-  .doubleClickDetected = 0x09,
-  .wasPressed = 0x10,
+  .led = 0x05,
+  .state = 0x11,
+  .wasPressed = 0x12,
+  .doubleClickDetected = 0x13,
+  .pressCount = 0x14,
   .doubleClickDuration = 0x21,
-  .emaParameter = 0x23,
-  .emaPeriod = 0x24,
-  .ledWrite = 0x87,
+  .emaParameter = 0x22,
+  .emaPeriod = 0x23,
+  .ledWrite = 0x85,
   .doubleClickDurationWrite = 0xA1,
-  .emaParameterWrite = 0xA3,
-  .emaPeriodWrite = 0xA4,
+  .emaParameterWrite = 0xA2,
+  .emaPeriodWrite = 0xA3,
 
 };
 
@@ -210,23 +212,27 @@ void setup() {
 }
 
 void loop() {
-  float a = valueMap.emaParameter / 250.0;
+  float a = valueMap.emaParameter / 255.0;
   if (updateFlag) {
     startI2C(); // reinitialise I2C with new address, update EEPROM with custom address as necessary
     updateFlag = false;
   }
-  switchAvg = a * digitalRead(switchPin) + (1 - a) * switchAvg;
-  if (switchAvg > 0.5) {
-    switchOn = true;
+
+  if ((millis() - millisSinceButtonRead) > valueMap.emaPeriod) {
+    switchAvg = a * digitalRead(switchPin) + (1 - a) * switchAvg;
+    if (switchAvg > 0.5) {
+      switchOn = true;
+    }
+    if (switchAvg < 0.5) {
+      switchOn = false;
+    }
+    if ((switchOn == false) && (switchOnPrev == true)) {
+      switchEvent();
+    }
+    switchOnPrev = switchOn;
+    millisSinceButtonRead = millis();
+    //delay(valueMap.emaPeriod);
   }
-  if (switchAvg < 0.5) {
-    switchOn = false;
-  }
-  if ((switchOn == false) && (switchOnPrev == true)) {
-    switchEvent();
-  }
-  switchOnPrev = switchOn;
-  delay(valueMap.emaPeriod);
 }
 
 void switchEvent() {
