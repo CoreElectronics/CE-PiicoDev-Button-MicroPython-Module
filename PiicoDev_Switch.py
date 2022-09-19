@@ -87,7 +87,7 @@ class PiicoDev_Switch(object):
     @property    
     def is_pressed(self):
         """Returns the current state of the button.  `True` for pressed and `False` for not pressed"""
-        if self._read_int(_REG_STATE, 1) == 1:
+        if self._read_int(_REG_IS_PRESSED, 1) == 1:
             return False
         else:
             return True

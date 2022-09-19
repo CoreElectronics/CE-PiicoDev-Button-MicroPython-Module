@@ -91,11 +91,11 @@ struct memoryMap {
   uint8_t firmwareMajor;
   uint8_t firmwareMinor;
   uint8_t i2cAddress;
-  uint16_t pressCount;
   uint8_t led;
   uint8_t state;
-  uint8_t doubleClickDetected;
   uint8_t wasPressed;
+  uint8_t doubleClickDetected;
+  uint16_t pressCount;
   uint16_t doubleClickDuration;
   uint8_t emaParameter;
   uint8_t emaPeriod;
@@ -131,11 +131,11 @@ volatile memoryMap valueMap = {
   .firmwareMajor = FIRMWARE_MAJOR,
   .firmwareMinor = FIRMWARE_MINOR,
   .i2cAddress = DEFAULT_I2C_ADDRESS,
-  .pressCount = 0x00,
   .led = 0x01,
   .state = 0x00,
-  .doubleClickDetected = 0,
   .wasPressed = 0,
+  .doubleClickDetected = 0,
+  .pressCount = 0x00,
   .doubleClickDuration = DOUBLE_CLICK_DURATION,
   .emaParameter = EMA_PARAMETER,
   .emaPeriod = EMA_PERIOD,
@@ -156,11 +156,11 @@ void idReturn(char *data);
 void firmwareMajorReturn(char *data);
 void firmwareMinorReturn(char *data);
 void setAddress(char *data);
-void readPressCount(char *data);
 void getPowerLed(char *data);
 void readState(char *data);
-void readDoubleClickDetected(char *data);
 void readWasPressed(char *data);
+void readDoubleClickDetected(char *data);
+void readPressCount(char *data);
 void getDoubleClickDuration(char *data);
 void getEMAParameter(char *data);
 void getEMAPeriod(char *data);
@@ -174,11 +174,11 @@ functionMap functions[] = {
   {registerMap.firmwareMajor, firmwareMajorReturn},
   {registerMap.firmwareMinor, firmwareMinorReturn},
   {registerMap.i2cAddress, setAddress},
-  {registerMap.pressCount, readPressCount},
   {registerMap.led, getPowerLed},
   {registerMap.state, readState},
-  {registerMap.doubleClickDetected, readDoubleClickDetected},
   {registerMap.wasPressed, readWasPressed},
+  {registerMap.doubleClickDetected, readDoubleClickDetected},
+  {registerMap.pressCount, readPressCount},
   {registerMap.doubleClickDuration, getDoubleClickDuration},
   {registerMap.emaParameter, getEMAParameter},
   {registerMap.emaPeriod, getEMAPeriod},
