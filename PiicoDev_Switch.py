@@ -29,7 +29,7 @@ def _set_bit(x, n):
     return x | (1 << n)
 
 class PiicoDev_Switch(object):
-    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, double_press_duration=300):
+    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, double_press_duration=300, ema_parameter=63, ema_duration=20):
         try:
             if compat_ind >= 1:
                 pass
