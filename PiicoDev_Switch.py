@@ -9,19 +9,18 @@ compat_str = '\nUnified PiicoDev library out of date.  Get the latest module: ht
 _BASE_ADDRESS = 0x42
 _DEVICE_ID    = 409
 
-_REG_STATUS                = 0x01
+_REG_WHOAMI                = 0x01
 _REG_FIRM_MAJ              = 0x02
 _REG_FIRM_MIN              = 0x03
 _REG_I2C_ADDRESS           = 0x04
-_REG_PRESS_COUNT           = 0x05
-_REG_LED                   = 0x07
-_REG_STATE                 = 0x08
-_REG_DOUBLE_CLICK_DETECTED = 0x09
-_REG_WAS_PRESSED           = 0x10
-_REG_WHOAMI                = 0x11
-_REG_DOUBLE_CLICK_DURATION = 0x21
-_REG_EMA_PARAMETER         = 0x23
-_REG_EMA_PERIOD            = 0x24
+_REG_LED                   = 0x05
+_REG_IS_PRESSED            = 0x11
+_REG_WAS_PRESSED           = 0x12
+_REG_DOUBLE_PRESS_DETECTED = 0x13
+_REG_PRESS_COUNT           = 0x14
+_REG_DOUBLE_PRESS_DURATION = 0x21
+_REG_EMA_PARAMETER         = 0x22
+_REG_EMA_PERIOD            = 0x23
 
 def _read_bit(x, n):
     return x & 1 << n != 0
@@ -30,7 +29,7 @@ def _set_bit(x, n):
     return x | (1 << n)
 
 class PiicoDev_Switch(object):
-    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, double_click_duration=300):
+    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, double_press_duration=300):
         try:
             if compat_ind >= 1:
                 pass
@@ -40,7 +39,7 @@ class PiicoDev_Switch(object):
             print(compat_str)
         self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
         self._address = address
-        self.double_click_duration = double_click_duration
+        self.double_press_duration = double_press_duration
         self.ema_parameter = 63
         self.ema_period = 25
         if type(id) is list and not all(v == 0 for v in id): # preference using the ID argument. ignore id if all elements zero
@@ -103,20 +102,20 @@ class PiicoDev_Switch(object):
         
     @property
     def was_double_pressed(self):
-        if self._read_int(_REG_DOUBLE_CLICK_DETECTED, 1) == 1:
+        if self._read_int(_REG_DOUBLE_PRESS_DETECTED, 1) == 1:
             return True
         else:
             return False
 
     @property
-    def double_click_duration(self):
-        """Returns the period of time between each click to register as a double-click"""
-        return self._read_int(_REG_DOUBLE_CLICK_DURATION, 2)
+    def double_press_duration(self):
+        """Returns the period of time between each press to register as a double-press"""
+        return self._read_int(_REG_DOUBLE_PRESS_DURATION, 2)
     
-    @double_click_duration.setter
-    def double_click_duration(self, value):
-        """Sets the period of time between each click to register as a double-click"""
-        self._write_int(_set_bit(_REG_DOUBLE_CLICK_DURATION, 7), value, 2)
+    @double_press_duration.setter
+    def double_press_duration(self, value):
+        """Sets the period of time between each press to register as a double-press"""
+        self._write_int(_set_bit(_REG_DOUBLE_PRESS_DURATION, 7), value, 2)
         
     @property
     def ema_parameter(self):
