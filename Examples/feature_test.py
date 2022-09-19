@@ -1,7 +1,7 @@
 from PiicoDev_Switch import PiicoDev_Switch
 from PiicoDev_Unified import sleep_ms
  
-button = PiicoDev_Switch(double_press_duration=2000)   # Initialise the RFID module
+button = PiicoDev_Switch(double_press_duration=1000, ema_parameter=)   # Initialise the RFID module
 
 while True:
     print('----------------------------------------------------')
