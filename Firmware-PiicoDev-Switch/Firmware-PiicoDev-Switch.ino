@@ -76,11 +76,11 @@ const uint8_t addressPin4 = PIN_PC1;
 #endif
 
 // System global variables
-volatile bool updateFlag = true; // Goes true when new data received. Cause LEDs to update
+volatile bool updateFlag = true; // Goes true when new data received
 volatile uint32_t lastSyncTime = 0;
 
 #define LOCAL_BUFFER_SIZE 20 // bytes
-uint8_t incomingData[LOCAL_BUFFER_SIZE]; // Local buffer to record I2C bytes before committing to file, add 1 for 0 character on end
+uint8_t incomingData[LOCAL_BUFFER_SIZE]; // Local buffer to record I2C bytes
 volatile uint16_t incomingDataSpot = 0; // Keeps track of where we are in the incoming buffer
 
 uint8_t responseBuffer[I2C_BUFFER_SIZE]; // Used to pass data back to master
@@ -248,8 +248,7 @@ void switchEvent() {
   }
 }
 
-// Begin listening on I2C bus as I2C slave using the global variable valueMap.i2cAddress
-// ToDo don't use globals ie. pass in value map =>  void startI2C(memoryMap *map)
+// Begin listening on I2C bus as I2C target using the global variable valueMap.i2cAddress
 void startI2C()
 {
   uint8_t address;
