@@ -165,10 +165,10 @@ class PiicoDev_Switch(object):
         v[0]=self._read_int(_REG_FIRM_MIN)
         return (v[1],v[0])
 
-    def setI2Caddr(self, x):
-        x=int(newAddr)
+    def setI2Caddr(self, new_addr):
+        x=int(new_addr)
         assert 8 <= x <= 0x77, 'address must be >=0x08 and <=0x77'
-        self._write_int(_REG_I2C_ADDRESS, x)
+        self._write_int(_set_bit(_REG_I2C_ADDRESS, 7), x)
         self._address = x
         sleep_ms(5)
         return 0
