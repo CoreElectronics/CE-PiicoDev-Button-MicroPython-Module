@@ -8,7 +8,7 @@ See the [Quickstart Guide](https://piico.dev/p21)
 
  # Initialisation
  
-## `PiicoDev_Switch(bus=, freq=, sda=, scl=, address=0x42, id=, double_click_duration=300, ema_parameter=63, ema_duration=20)`
+## `PiicoDev_Switch(bus=, freq=, sda=, scl=, address=0x42, id=, double_press_duration=300, ema_parameter=63, ema_duration=20)`
 | Parameter             | Type                     | Range             | Default                               | Description                                                                                                                                                                            |
 | --------------------- | ------------------------ | ----------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | bus                   | int                      | 0,1               | Raspberry Pi Pico: 0, Raspberry Pi: 1 | I2C Bus.  Ignored on Micro:bit                                                                                                                                                         |
@@ -17,9 +17,9 @@ See the [Quickstart Guide](https://piico.dev/p21)
 | scl                   | Pin                      | Device Dependent  | Device Dependent                      | I2C SCL Pin. Implemented on Raspberry Pi Pico only                                                                                                                                     |
 | address               | int                      | 0x42, 0x08 - 0x77 | 0x42                                  | Manually specify the address of the connected device. For when a software address is set on the device.                                                                                |
 | id                    | List[int, int, int, int] | 1=ON, 0=OFF       | [0,0,0,0]                             | Hardware switches change the device address - Abstracts the need for user to look up an address, simply input the switch positions. Alternatively, use `address` for explicit address. |
-| double_click_duration | int                      |                   | 300                                   | If the button is pressed twice within this period (ms) a double-click will be registered                                                                                               |
+| double_press_duration | int                      |                   | 300                                   | If the button is pressed twice within this period (ms) a double-press will be registered                                                                                               |
 | ema_parameter         | int                      | 0-255             | 63                                    | The tuning parameter for the button debounce [EMA Filter](https://en.wikipedia.org/wiki/Moving_average).                                                                               |
-| ema_duration          | int                      | 0-255             | 20                                    | The sample period in milliseconds for the button debounce [EMA Filter](https://en.wikipedia.org/wiki/Moving_average).                                                                  |
+| ema_period            | int                      | 0-255             | 20                                    | The sample period in milliseconds for the button debounce [EMA Filter](https://en.wikipedia.org/wiki/Moving_average).                                                                  |
 
 ## Properties
 
@@ -47,7 +47,7 @@ The number of milliseconds allowed for a double press.
 
 The tuning parameter for the button debounce [EMA Filter](https://en.wikipedia.org/wiki/Moving_average).
 
-## `.ema_duration`
+## `.ema_period`
 
 The sample period in milliseconds for the button debounce [EMA Filter](https://en.wikipedia.org/wiki/Moving_average).
 

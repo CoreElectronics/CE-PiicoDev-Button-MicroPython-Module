@@ -29,7 +29,7 @@ def _set_bit(x, n):
     return x | (1 << n)
 
 class PiicoDev_Switch(object):
-    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, double_press_duration=300, ema_parameter=63, ema_duration=20):
+    def __init__(self, bus=None, freq=None, sda=None, scl=None, address=_BASE_ADDRESS, id=None, double_press_duration=300, ema_parameter=63, ema_period=20):
         try:
             if compat_ind >= 1:
                 pass
@@ -41,7 +41,7 @@ class PiicoDev_Switch(object):
         self._address = address
         self.double_press_duration = double_press_duration
         self.ema_parameter = ema_parameter
-        self.ema_period = ema_duration
+        self.ema_period = ema_period
         if type(id) is list and not all(v == 0 for v in id): # preference using the ID argument. ignore id if all elements zero
             assert max(id) <= 1 and min(id) >= 0 and len(id) == 4, "id must be a list of 1/0, length=4"
             self._address=8+id[0]+2*id[1]+4*id[2]+8*id[3] # select address from pool
