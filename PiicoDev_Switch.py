@@ -39,9 +39,6 @@ class PiicoDev_Switch(object):
             print(compat_str)
         self.i2c = create_unified_i2c(bus=bus, freq=freq, sda=sda, scl=scl)
         self._address = address
-        self.double_press_duration = double_press_duration
-        self.ema_parameter = ema_parameter
-        self.ema_period = ema_period
         if type(id) is list and not all(v == 0 for v in id): # preference using the ID argument. ignore id if all elements zero
             assert max(id) <= 1 and min(id) >= 0 and len(id) == 4, "id must be a list of 1/0, length=4"
             self._address=8+id[0]+2*id[1]+4*id[2]+8*id[3] # select address from pool
@@ -50,7 +47,10 @@ class PiicoDev_Switch(object):
             if self.whoami != _DEVICE_ID:
                 print("* Incorrect device found at address {}".format(address))   
         except:
-            print("* Couldn't find a device - check switches and wiring")   
+            print("* Couldn't find a device - check switches and wiring")
+        self.double_press_duration = double_press_duration
+        self.ema_parameter = ema_parameter
+        self.ema_period = ema_period
 
     def _read(self, register, length=1):
         try:
