@@ -8,29 +8,29 @@ void readPressCount(char *data) {
 }
 
 void idReturn(char *data) {
-  loadArray((uint16_t)valueMap.id);
+  loadArray(valueMap.id);
 }
 
 void firmwareMajorReturn(char *data) {
-  loadArray((uint8_t)valueMap.firmwareMajor);
+  loadArray(valueMap.firmwareMajor);
 }
 
 void firmwareMinorReturn(char *data) {
-  loadArray((uint8_t)valueMap.firmwareMinor);
+  loadArray(valueMap.firmwareMinor);
 }
 
 void readState(char *data) {
   valueMap.state = digitalRead(switchPin);
-  loadArray((uint8_t)valueMap.state);
+  loadArray(valueMap.state);
 }
 
 void readDoubleClickDetected(char *data) {
-  loadArray((uint8_t)valueMap.doubleClickDetected);
+  loadArray(valueMap.doubleClickDetected);
   valueMap.doubleClickDetected = 0;
 }
 
 void readWasPressed(char *data) {
-  loadArray((uint8_t)valueMap.wasPressed);
+  loadArray(valueMap.wasPressed);
   valueMap.wasPressed = false;
 }
 
@@ -40,7 +40,7 @@ void powerLed(bool state) {
 
 void getPowerLed(char *data) {
   valueMap.led = digitalRead(powerLedPin);
-  loadArray((uint8_t)valueMap.led);
+  loadArray(valueMap.led);
 }
 
 void getDoubleClickDuration(char *data) {

@@ -46,15 +46,15 @@ enum eepromLocations {
 uint8_t oldAddress;
 
 // EMA Variables
-float switchAvg;
-bool switchOn;
-bool switchOnPrev;
+float switchAvg = 0.0;
+bool switchOn = false;
+bool switchOnPrev = false;
 
 // Double-click detection variables
 uint32_t timeBuff[3];
 uint8_t pos = 0;
 
-uint32_t millisSinceButtonRead;
+uint32_t millisSinceButtonRead = 0;
 
 // Hardware Connectins
 // Prototyping with Arduino Uno
@@ -123,7 +123,6 @@ const memoryMap registerMap = {
   .doubleClickDurationWrite = 0xA1,
   .emaParameterWrite = 0xA2,
   .emaPeriodWrite = 0xA3,
-
 };
 
 volatile memoryMap valueMap = {
@@ -231,7 +230,6 @@ void loop() {
     }
     switchOnPrev = switchOn;
     millisSinceButtonRead = millis();
-    //delay(valueMap.emaPeriod);
   }
 }
 
