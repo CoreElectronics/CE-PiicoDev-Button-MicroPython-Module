@@ -86,7 +86,26 @@ volatile uint16_t incomingDataSpot = 0; // Keeps track of where we are in the in
 uint8_t responseBuffer[I2C_BUFFER_SIZE]; // Used to pass data back to master
 volatile uint8_t responseSize = 1; // Defines how many bytes of relevant data is contained in the responseBuffer
 
-struct memoryMap {
+struct memoryMapRegs {
+  uint8_t id;
+  uint8_t firmwareMajor;
+  uint8_t firmwareMinor;
+  uint8_t i2cAddress;
+  uint8_t led;
+  uint8_t state;
+  uint8_t wasPressed;
+  uint8_t doubleClickDetected;
+  uint8_t pressCount;
+  uint8_t doubleClickDuration;
+  uint8_t emaParameter;
+  uint8_t emaPeriod;
+  uint8_t ledWrite;
+  uint8_t doubleClickDurationWrite;
+  uint8_t emaParameterWrite;
+  uint8_t emaPeriodWrite;
+};
+
+struct memoryMapData {
   uint16_t id;
   uint8_t firmwareMajor;
   uint8_t firmwareMinor;
@@ -106,7 +125,7 @@ struct memoryMap {
 };
 
 // Register addresses.
-const memoryMap registerMap = {
+const memoryMapRegs registerMap = {
   .id = 0x01,
   .firmwareMajor = 0x02,
   .firmwareMinor = 0x03,
@@ -125,7 +144,7 @@ const memoryMap registerMap = {
   .emaPeriodWrite = 0xA3,
 };
 
-volatile memoryMap valueMap = {
+volatile memoryMapData valueMap = {
   .id = DEVICE_ID,
   .firmwareMajor = FIRMWARE_MAJOR,
   .firmwareMinor = FIRMWARE_MINOR,
