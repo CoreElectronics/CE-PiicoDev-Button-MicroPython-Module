@@ -51,6 +51,25 @@ The tuning parameter for the button debounce [EMA Filter](https://en.wikipedia.o
 
 The sample period in milliseconds for the button debounce [EMA Filter](https://en.wikipedia.org/wiki/Moving_average).
 
+# Device Registers
+The PiicoDev Potentiometer is an I2C device with default address 0x35. The register map is provided if you wish to create your own driver.
+A register can be Read (R) or Write (W), but not both. For values that require Read and Write, the convention is to set bit7 for the Write-register. Eg. the status LED - Read: 0x07 and Write: 0x07 | 0x80 = 0x87
+
+| Register Name         | Address   | Bytes  | Mode | Default Value    | Description
+| --------------------- | --------- | ------ | ---- | ---------------- | -----------
+| Device ID             | 0x01      | 2      | R    | 409              | I2C device ID
+| Firmware Major        | 0x02      | 1      | R    | Varies           | Major firmware version
+| Firmware Minor        | 0x03      | 1      | R    | Varies           | Minor firmware version
+| I2C Address           | 0x04      | 1      | W    | 0x42             | Set new I2C address
+| LED                   | 0x05/0x85 | 1      | R/W  | 1                | 0=OFF, 1=ON
+| Is Pressed            | 0x11/0x91 | 1      | R    | 0                |
+| Was Pressed           | 0x12/0x92 | 1      | R    | 0                |
+| Was Double Pressed    | 0x13/0x93 | 1      | R    | 0                |
+| Press Count           | 0x14/0x94 | 2      | R    | 0                |
+| Double Press Duration | 0x15/0x95 | 1      | R/W  | 300              |
+| EMA Parameter         | 0x16/0x96 | 1      | R/W  | 63               |
+| EMA Period            | 0x17/0x97 | 1      | R/W  | 20               |
+
 # License
 
 This project is open source - please review the LICENSE.md file for further licensing information.
