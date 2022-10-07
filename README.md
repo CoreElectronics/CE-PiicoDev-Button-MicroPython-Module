@@ -61,10 +61,10 @@ A register can be Read (R) or Write (W), but not both. For values that require R
 | Firmware Major        | 0x02      | 1      | R    | Varies           | Major firmware version
 | Firmware Minor        | 0x03      | 1      | R    | Varies           | Minor firmware version
 | I2C Address           | 0x04      | 1      | W    | 0x42             | Set new I2C address
-| LED                   | 0x05/0x85 | 1      | R/W  | 1                | 0=OFF, 1=ON
-| Is Pressed            | 0x11/0x91 | 1      | R    | 0                |
-| Was Pressed           | 0x12/0x92 | 1      | R    | 0                |
-| Was Double Pressed    | 0x13/0x93 | 1      | R    | 0                |
+| LED                   | 0x05/0x85 | 1      | R/W  | 1                | 0 = OFF, 1 = ON
+| Is Pressed            | 0x11/0x91 | 1      | R    | 0                | 0 = Not pressed, 1 = Pressed
+| Was Pressed           | 0x12/0x92 | 1      | R    | 0                | 0 = Was not pressed, 1 = Was pressed
+| Was Double Pressed    | 0x13/0x93 | 1      | R    | 0                | 
 | Press Count           | 0x14/0x94 | 2      | R    | 0                |
 | Double Press Duration | 0x15/0x95 | 1      | R/W  | 300              |
 | EMA Parameter         | 0x16/0x96 | 1      | R/W  | 63               |
