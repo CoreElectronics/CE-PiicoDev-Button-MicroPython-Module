@@ -27,7 +27,7 @@
 #include <avr/power.h> // For powering-down peripherals such as ADC and Timers
 
 #define FIRMWARE_MAJOR 0x01
-#define FIRMWARE_MINOR 0x00
+#define FIRMWARE_MINOR 0x01
 #define DEVICE_ID 409
 #define DEFAULT_I2C_ADDRESS 0x42    // The default address when all switches are off
 #define I2C_ADDRESS_POOL_START 0x08 // The start of the 'smart module address pool' minus 1 - addresses settable by switches
