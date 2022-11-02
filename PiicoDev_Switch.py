@@ -172,4 +172,3 @@ class PiicoDev_Switch(object):
         self._address = x
         sleep_ms(5)
         return 0
- 
