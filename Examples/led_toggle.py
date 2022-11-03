@@ -1,12 +1,10 @@
+# Toggle the Button's "Power" LED on every click
 from PiicoDev_Switch import PiicoDev_Switch
 from PiicoDev_Unified import sleep_ms
  
-button = PiicoDev_Switch()   # Initialise the module
+button = PiicoDev_Switch()
 
 while True:
-    while button.was_pressed == False:
-        sleep_ms(10)
-    button.led = False
-    while button.was_pressed == False:
-        sleep_ms(10)
-    button.led = True
+    if button.was_pressed:
+        button.led = not button.led
+    sleep_ms(100)
