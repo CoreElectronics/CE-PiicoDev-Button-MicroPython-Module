@@ -8,6 +8,6 @@ import subprocess # subprocess is used for executing shell commands
 button = PiicoDev_Switch()   # Initialise the module
 
 while True:
-    if button.was_pressed: # execute a command (open the File Manager at the home directory
+    if button.was_pressed: # execute a command (open the File Manager at the home directory)
         p = subprocess.run(["pcmanfm", "/home/pi"])
     sleep_ms(100)
