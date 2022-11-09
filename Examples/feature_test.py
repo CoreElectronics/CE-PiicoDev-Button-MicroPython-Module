@@ -1,7 +1,7 @@
 from PiicoDev_Switch import PiicoDev_Switch
 from PiicoDev_Unified import sleep_ms
  
-button = PiicoDev_Switch(address=0x72, double_press_duration=400, ema_parameter=73, ema_period=30)   # Initialise the module
+button = PiicoDev_Switch(address=0x42, double_press_duration=400, ema_parameter=73, ema_period=30)   # Initialise the module
 
 while True:
     print('----------------------------------------------------')
